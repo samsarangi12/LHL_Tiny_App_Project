@@ -9,19 +9,18 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-    <p></p>
+    <h1>TinyApp</h1>
+    <h3>My URLs</h3>
+
+    <!--  This code will run a for loop to loop through the objects in the URL database -->
+
+    <% for (let url in urls) {%>
+      <ul>
+        <li><%=url + ": " + urls[url]%></li>
+      </ul>
+    <%}%>
+
 </body>
 </html>
 
-<h1>TinyApp</h1>
-<h3>My URLs</h3>
-
-<!--  This code will run a for loop to loop through the objects in the URL database -->
-
-<% for (let url in urls) {%>
-  <ul>
-    <li><%=url + ": " + urls[url]%></li>
-  </ul>
-
-<%}%>
 
