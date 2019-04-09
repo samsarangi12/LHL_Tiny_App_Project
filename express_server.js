@@ -14,12 +14,15 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
+app.get("/hello", (req, res) => {
+  let templateVars = { greeting: "Hello World!"}
+  res.render("hello_world", templateVars);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase}
+  res.render("urls_index", templateVars);
+  //res.json(urlDatabase);
 });
 
 app.listen(PORT, () => {
