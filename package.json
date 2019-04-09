@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/samsarangi12/LHL_Tiny_App_Project#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "http": "0.0.0"
