@@ -9,18 +9,20 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-    <!-- <h1>TinyApp</h1> -->
+
     <% include partials/_header %>
-    <h3>Create TinyURL</h3>
-    <h3>My URLs</h3>
-
+    <p align="center">
+      <a href="/urls/new">Create TinyURL</a>
+    </p> 
+    
     <!--  This code will run a for loop to loop through the objects in the URL database -->
-
-    <% for (let url in urls) {%>
-      <ul>
-        <li><%=url + ": " + urls[url]%></li>
-      </ul>
-    <%}%>
+      <% for (let url in urls) {%>    
+        <ul class="list-unstyled">
+          <li><%=url + " -> " + urls[url]%>
+              <form action="/urls/<%=url%>/delete" method="POST" style = "display:inline"><button type = "submit">Delete</button></form>
+          </li> 
+        </ul>
+      <%}%>
 
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 //Load the packages that we need
 const http = require("http");
 const express = require("express");
@@ -50,6 +49,14 @@ app.post("/urls", (req, res) => {
   let newShortURL = generateShortURL();
   urlDatabase[newShortURL] = req.body.longURL;
   res.redirect("/urls");
+})
+
+//Route to delete a URL
+app.post("/urls/:url/delete", (req, res) => {
+  let shortURL = req.params.url
+  delete urlDatabase[shortURL]
+  res.redirect("/urls");
+  
 })
 
 //This route renders the tiny URLS page.
