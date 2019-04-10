@@ -10,9 +10,7 @@
 </head>
 <body style="font-size:20px; padding:50px;">
     <% include partials/_header %>
-    <p align="center">
-      <a href="/urls/new">Create TinyURL</a>
-    </p>
+    <a href="/urls/new">Create TinyURL</a>
     <h3>ShortURL: <%=shortURL%></h3>
     <form class="form-inline" action="/urls/<%=shortURL%>" method="POST">
       <div class="form-group mb-2">
@@ -23,6 +21,3 @@
     </form>
 </body>
 </html>
-
-
-

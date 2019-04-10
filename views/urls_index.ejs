@@ -9,12 +9,9 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-
-    <% include partials/_header %>
-    <p align="center">
-      <a href="/urls/new">Create TinyURL</a>
-    </p> 
     
+    <% include partials/_header %>
+    <a href="/urls/new">Create TinyURL</a>
     <!--  This code will run a for loop to loop through the objects in the URL database -->
       <% for (let url in urls) {%>    
         <ul class="list-unstyled">
@@ -26,7 +23,6 @@
           </li> 
         </ul>
       <%}%>
-
 </body>
 </html>
 
