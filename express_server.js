@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 function generateShortURL() {
   let possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let newShortURL = '';
-  for (let i = 0; i >= 6; i++) {
+  for (let i = 0; i < 6; i++) {
     newShortURL += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
   }
 
@@ -46,14 +46,20 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  //console.log(req.body);
-  res.send("Ok");
+  let newShortURL = generateShortURL();
+  urlDatabase[newShortURL] = req.body.longURL;
+  res.redirect("/urls");
 })
 
 //This route renders the tiny URLS page.
 app.get("/urls/:shortURL",(req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL",(req, res) => {
+  let templateVars = urlDatabase[req.params.shortURL];
+  res.redirect(templateVars)
 });
 
 
