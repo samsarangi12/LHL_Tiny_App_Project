@@ -39,7 +39,6 @@ app.get("/urls", (req, res) => {
   //res.json(urlDatabase);
 });
 
-
 //This route reders the url submission form.
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -55,6 +54,16 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:url/delete", (req, res) => {
   let shortURL = req.params.url
   delete urlDatabase[shortURL]
+  res.redirect("/urls");
+  
+})
+
+//Route to update a URL
+app.post("/urls/:id", (req, res) => {
+  let shortURL = req.params.id
+  let longURL = urlDatabase.shortURL
+  console.log(shortURL)
+  urlDatabase[shortURL] = req.body.longURL;
   res.redirect("/urls");
   
 })
