@@ -56,6 +56,18 @@ function emailLookup(email) {
   return output;
 }
 
+//Funtion to get email id to pass as the cookie
+function getEmail(userid) {
+  let useremail = '';
+  for (element in users) {
+    let userlist = users[element];
+    if(userlist.id === userid) {
+      useremail = userlist.email;
+    }
+  }
+  return useremail;
+}
+
 //Route to get the registration form
 app.get("/register", (req, res) => {
   res.render("registration");
@@ -96,13 +108,7 @@ app.post("/logout", (req, res) => {
 //This route renders the urls page and also provides a link to the create a Tiny URL.
 app.get("/urls", (req, res) => {
   let userid = req.cookies["userid"]
-  let useremail = '';
-  for (element in users) {
-    let userlist = users[element];
-    if(userlist.id === userid) {
-      useremail = userlist.email;
-    }
-  }
+  let useremail = getEmail(userid);
   let templateVars = {username: useremail, urls: urlDatabase};
   //let templateVars = {username: users, userid:req.cookies["userid"], urls: urlDatabase};
   res.render("urls_index", templateVars);
@@ -111,13 +117,7 @@ app.get("/urls", (req, res) => {
 //This route reders the url submission form.
 app.get("/urls/new", (req, res) => {
   let userid = req.cookies["userid"]
-  let useremail = '';
-  for (element in users) {
-    let userlist = users[element];
-    if(userlist.id === userid) {
-      useremail = userlist.email;
-    }
-  }
+  let useremail = getEmail(userid);
   let templateVars = {
     username: useremail
     //username: users, userid:req.cookies["userid"]
@@ -153,15 +153,8 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/urls/:shortURL",(req, res) => {
   let userid = req.cookies["userid"]
-  let useremail = '';
-  for (element in users) {
-    let userlist = users[element];
-    if(userlist.id === userid) {
-      useremail = userlist.email;
-    }
-  }
+  let useremail = getEmail(userid);
   let templateVars = {username: useremail, shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
-  //let templateVars = {username: users, userid:req.cookies["userid"], shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 
