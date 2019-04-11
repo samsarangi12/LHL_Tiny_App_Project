@@ -148,7 +148,12 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
     username: useremail
   };
-  res.render("urls_new", templateVars);
+  if(userid) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
+
 });
 
 //This route creates the new tiny url.
