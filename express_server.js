@@ -22,11 +22,65 @@ function generateShortURL() {
   return newShortURL
 }
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
-let urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+//Email lookup function to check if the email entered 
+//by the user is available in the database.
+function emailLookup(email) {
+  let output = false;
+  for (element in users) {
+    let userlist = users[element];
+    //console.log(userlist)
+    // console.log(users[element].email);
+    if(userlist.email === email) {
+      output = true;
+    }
+  }
+  console.log("display the users", users)
+  return output;
+}
+
+//Route to get the registration form
+app.get("/register", (req, res) => {
+  res.render("registration");
+});
+
+//Route to post the registration
+app.post("/register", (req, res) => {
+  if (req.body.email && req.body.password) {
+    let emailPresent = emailLookup(req.body.email)
+    if (emailPresent) {
+      res.status(400).send("Email already present. Please use a new email to register")
+    } else {
+      const userid = generateShortURL();
+      const useremail = req.body.email;
+      const userpwd = req.body.password;
+      users[userid] = {id: userid, email:useremail, password: userpwd};
+      //console.log(users);
+      res.cookie("username", useremail);
+      res.redirect("/urls");
+    }
+
+  } else {
+    res.status(400).send("Email or password cannot be empty")
+  }
+});
 
 //Route to post the login form
 app.post("/login", (req, res) => {
@@ -83,15 +137,6 @@ app.get("/urls/:shortURL",(req, res) => {
   let templateVars = {username: req.cookies["username"], shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
-
-//This route renders the tiny URLS page. Removing this code since the 
-//functionality is no more required for the app.
-app.get("/u/:shortURL",(req, res) => {
-  let templateVars = urlDatabase[req.params.shortURL];
-  res.redirect(templateVars)
-});
-
-
 
 app.listen(PORT, () => {
   console.log(`Example app is listening on port ${PORT}`)
