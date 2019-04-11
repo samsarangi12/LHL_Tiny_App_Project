@@ -36,7 +36,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('username');
-  console.log(req.body.username);
+  res.redirect("/urls");
 });
 
 //This route renders the urls page and also provides a link to the create a Tiny URL.
