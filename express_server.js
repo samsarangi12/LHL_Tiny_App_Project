@@ -11,6 +11,7 @@ const PORT = "8080";
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
+
 //This function creates a random string which will be used for creating the shorturl
 function generateShortURL() {
   let possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -18,7 +19,6 @@ function generateShortURL() {
   for (let i = 0; i < 6; i++) {
     newShortURL += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
   }
-
   return newShortURL
 }
 
