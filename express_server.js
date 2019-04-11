@@ -52,7 +52,7 @@ function emailLookup(email) {
       output = true;
     }
   }
-  console.log("display the users", users)
+  //console.log("display the users", users)
   return output;
 }
 
@@ -73,7 +73,7 @@ app.post("/register", (req, res) => {
       const userpwd = req.body.password;
       users[userid] = {id: userid, email:useremail, password: userpwd};
       //console.log(users);
-      res.cookie("username", useremail);
+      res.cookie("userid", userid);
       res.redirect("/urls");
     }
 
@@ -95,14 +95,32 @@ app.post("/logout", (req, res) => {
 
 //This route renders the urls page and also provides a link to the create a Tiny URL.
 app.get("/urls", (req, res) => {
-  let templateVars = {username: req.cookies["username"], urls: urlDatabase};
+  let userid = req.cookies["userid"]
+  let useremail = '';
+  for (element in users) {
+    let userlist = users[element];
+    if(userlist.id === userid) {
+      useremail = userlist.email;
+    }
+  }
+  let templateVars = {username: useremail, urls: urlDatabase};
+  //let templateVars = {username: users, userid:req.cookies["userid"], urls: urlDatabase};
   res.render("urls_index", templateVars);
 });
 
 //This route reders the url submission form.
 app.get("/urls/new", (req, res) => {
+  let userid = req.cookies["userid"]
+  let useremail = '';
+  for (element in users) {
+    let userlist = users[element];
+    if(userlist.id === userid) {
+      useremail = userlist.email;
+    }
+  }
   let templateVars = {
-    username: req.cookies["username"]
+    username: useremail
+    //username: users, userid:req.cookies["userid"]
   };
   res.render("urls_new", templateVars);
 });
@@ -134,7 +152,16 @@ app.post("/urls/:id", (req, res) => {
 //This route renders the tiny URLS page. 
 
 app.get("/urls/:shortURL",(req, res) => {
-  let templateVars = {username: req.cookies["username"], shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
+  let userid = req.cookies["userid"]
+  let useremail = '';
+  for (element in users) {
+    let userlist = users[element];
+    if(userlist.id === userid) {
+      useremail = userlist.email;
+    }
+  }
+  let templateVars = {username: useremail, shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
+  //let templateVars = {username: users, userid:req.cookies["userid"], shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 
