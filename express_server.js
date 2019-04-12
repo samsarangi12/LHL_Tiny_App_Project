@@ -3,6 +3,7 @@ const http = require("http");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = "8080";
 
@@ -26,12 +27,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    hashedPassword: "$2b$10$ArZRWi46RTtEa0VKXZG3BO47FNG1fKqvvEE8fXvPUsNKDZmXPYhZu"
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    hashedPassword: "$2b$10$GxOCInMGzVAtn2ZvA0Nurep9fzrkIyYUWHQptvsdt9EE0XBvgO/72"
   }
 };
 
@@ -61,7 +62,7 @@ function passwordLookup(password) {
   let output = false;
   for (element in users) {
     let userlist = users[element];
-    if(userlist.password === password) {
+    if(bcrypt.compareSync(password, userlist.hashedPassword)) {
       output = true;
     }
   }
@@ -94,7 +95,8 @@ app.post("/register", (req, res) => {
       const userid = generateShortURL();
       const useremail = req.body.email;
       const userpwd = req.body.password;
-      users[userid] = {id: userid, email:useremail, password: userpwd};
+      const hashedPassword = bcrypt.hashSync(userpwd, 10);
+      users[userid] = {id: userid, email:useremail, hashedPassword: hashedPassword};
       res.cookie("userid", userid);
       res.redirect("/urls");
     }
@@ -121,9 +123,6 @@ app.post("/login", (req, res) => {
           userid = userlist.id;
         }
       }
-      const useremail = req.body.email;
-      const userpwd = req.body.password;
-      users[userid] = {id: userid, email:useremail, password: userpwd};
       res.cookie("userid", userid);
       res.redirect("/urls");
     } else if (emailPresent && !passwordMatch) {
