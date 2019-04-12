@@ -16,7 +16,7 @@ app.use(cookieParser());
 app.use(cookieSession({
   name: "session",
   keys: ["This is a key for a basic tinyURL APP"],
-  maxAge: 1 * 60 * 1000
+  maxAge: 60 * 60 * 1000
 }))
 
 //This function creates a random string which will be used for creating the shorturl
@@ -88,6 +88,17 @@ function getEmail(userid) {
   }
   return useremail;
 }
+
+//Route to display the root page
+app.get("/", (req, res) => {
+  let userid = req.session.userid;
+  if(userid) {
+    res.redirect("/urls")
+  } else {
+    res.redirect("/login");
+  }
+  res.render("welcome");
+});
 
 //Route to get the registration form
 app.get("/register", (req, res) => {
@@ -164,7 +175,9 @@ app.get("/urls", (req, res) => {
     let templateVars = {username: useremail, urls: selectedUrlDatabase};
     res.render("urls_index", templateVars);
   } else {
-    res.redirect("/login");
+    //res.redirect("/login"); (This statement will redirect the user to the login page.
+                             //But changing it to display an error message instead.)
+    res.send("User not logged in. Please login/register");
   }
 });
 
