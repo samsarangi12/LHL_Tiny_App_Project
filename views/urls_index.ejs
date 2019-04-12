@@ -8,14 +8,14 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
-<body style="font-size:20px; padding:50px;">
+<body style="font-size:20px; padding:50px;">  
     
     <% include partials/_header %>
     <a href="/urls/new">Create TinyURL</a>
     <!--  This code will run a for loop to loop through the objects in the URL database -->
       <% for (let url in urls) {%>    
         <ul class="list-unstyled">
-          <li><%=url%> <a href=<%=urls[url]%>><%=urls[url]%></a>
+          <li><%=url%> <a href=<%=urls[url].longURL%>><%=urls[url].longURL%>   </a>
             <a href="/urls/<%=url%>"><button type = "submit">Edit</button> </a>
               <form action="/urls/<%=url%>/delete" method="POST" style = "display:inline">
                 <button type = "submit">Delete</button>

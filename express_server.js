@@ -36,8 +36,10 @@ const users = {
 };
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "user2RandomID" },
+  "9sm51K": { longURL: "http://www.google1.com", userID: "user2RandomID" },
+  "9sm53K": { longURL: "http://www.google2.com", userID: "user2RandomID" }
 };
 
 //Email lookup function to check if the email entered 
@@ -111,8 +113,14 @@ app.post("/login", (req, res) => {
   if (req.body.email && req.body.password) {
     let emailPresent = emailLookup(req.body.email);
     let passwordMatch = passwordLookup(req.body.password);
+    let userid = '';
     if (emailPresent && passwordMatch) {
-      const userid = generateShortURL();
+      for (element in users) {
+        let userlist = users[element];
+        if(userlist.email === req.body.email) {
+          userid = userlist.id;
+        }
+      }
       const useremail = req.body.email;
       const userpwd = req.body.password;
       users[userid] = {id: userid, email:useremail, password: userpwd};
@@ -137,8 +145,18 @@ app.post("/logout", (req, res) => {
 app.get("/urls", (req, res) => {
   let userid = req.cookies["userid"];
   let useremail = getEmail(userid);
-  let templateVars = {username: useremail, urls: urlDatabase};
-  res.render("urls_index", templateVars);
+  let selectedUrlDatabase = {}
+  if(userid) {
+    for (element in urlDatabase) {
+      if (urlDatabase[element].userID === userid) {
+        selectedUrlDatabase[element] = urlDatabase[element];
+      }
+    }
+    let templateVars = {username: useremail, urls: selectedUrlDatabase};
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 //This route reders the url submission form.
@@ -185,8 +203,13 @@ app.post("/urls/:id", (req, res) => {
 app.get("/urls/:shortURL",(req, res) => {
   let userid = req.cookies["userid"];
   let useremail = getEmail(userid);
-  let templateVars = {username: useremail, shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
-  res.render("urls_show", templateVars);
+  if(userid && urlDatabase[req.params.shortURL].userID === userid) {
+    let templateVars = {username: useremail, 
+    shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
+    res.render("urls_show", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.listen(PORT, () => {
