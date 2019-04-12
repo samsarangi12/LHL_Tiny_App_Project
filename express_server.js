@@ -22,15 +22,15 @@ function generateShortURL() {
   return newShortURL;
 }
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
  "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
 };
@@ -42,7 +42,7 @@ const urlDatabase = {
   "9sm53K": { longURL: "http://www.google2.com", userID: "user2RandomID" }
 };
 
-//Email lookup function to check if the email entered 
+//Email lookup function to check if the email entered
 //by the user is available in the database.
 function emailLookup(email) {
   let output = false;
@@ -55,7 +55,7 @@ function emailLookup(email) {
   return output;
 }
 
-//Password lookup function to check if the email entered 
+//Password lookup function to check if the email entered
 //by the user is available in the database.
 function passwordLookup(password) {
   let output = false;
@@ -159,7 +159,7 @@ app.get("/urls", (req, res) => {
   }
 });
 
-//This route reders the url submission form.
+//This route renders the url submission form.
 app.get("/urls/new", (req, res) => {
   let userid = req.cookies["userid"];
   let useremail = getEmail(userid);
@@ -175,42 +175,64 @@ app.get("/urls/new", (req, res) => {
 });
 
 //This route creates the new tiny url.
-app.post("/urls", (req, res) => {
+app.post("/urls/new", (req, res) => {
+  let userid = req.cookies["userid"];
   let newShortURL = generateShortURL();
-  urlDatabase[newShortURL] = req.body.longURL;
+  urlDatabase[newShortURL] = { longURL: req.body.longURL, userID: userid};
   res.redirect("/urls");
 })
 
 //Route to delete a URL
 app.post("/urls/:url/delete", (req, res) => {
+  let userid = req.cookies["userid"];
   let shortURL = req.params.url;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
-  
+  if (userid === urlDatabase[shortURL].userID) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 })
 
-//Route to update a URL
-app.post("/urls/:id", (req, res) => {
-  let shortURL = req.params.id;
-  let longURL = urlDatabase.shortURL;
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect("/urls");
-  
-})
-
-//This route renders the tiny URLS page. 
+//This route renders the tiny URLS page which allows the user to edit the
+//long url associated with a short url
 
 app.get("/urls/:shortURL",(req, res) => {
   let userid = req.cookies["userid"];
   let useremail = getEmail(userid);
   if(userid && urlDatabase[req.params.shortURL].userID === userid) {
-    let templateVars = {username: useremail, 
+    let templateVars = {username: useremail,
     shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
     res.render("urls_show", templateVars);
   } else {
     res.redirect("/login");
   }
 });
+
+//Route to update a URL
+app.post("/urls/:id", (req, res) => {
+  let userid = req.cookies["userid"];
+  console.log("Update_Userid", userid);
+  let shortURL = req.params.id;
+  if (userid === urlDatabase[shortURL].userID) {
+    urlDatabase[shortURL] = { longURL: req.body.longURL, userID: userid};
+    res.redirect("/urls");
+  }
+})
+
+//This route renders the tiny URLS page
+// app.get("/u/:shortURL",(req, res) => {
+//   let templateVars = urlDatabase[req.params.shortURL];
+//   res.render("urls_show", templateVars);
+// });
+
+
+//This route renders the tiny URLS page to anyone, even when the user is not logged in.
+app.get("/u/:shortURL", (req, res) => {
+  let templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
+  res.render("showShortUrl", templateVars);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app is listening on port ${PORT}`);

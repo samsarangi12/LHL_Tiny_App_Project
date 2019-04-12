@@ -7,17 +7,19 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-    <title>New URL - TinyApp Example</title>
+    <title>View Short URL</title>
   </head>
 
   <body style="font-size:20px; padding:50px;">
-
-    <% include partials/_header %>
-    <form class="form-inline" action="/urls/new" method="POST">
+    <h1>TinyApp</h1>
+    <a href="/login">Login</a>
+    <a>|</a>
+    <a href="/register">Register</a>
       <div class="form-group mb-2">
-        <label for="longURL">Enter a URL:</label>
-        <input class="form-control" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: 1em">
-        <button type="submit" class="btn btn-primary">Submit</button>
+          <ul class="list-unstyled">
+            <li><%=shortURL%><a href="<%=longURL.longURL%>"><%=longURL.longURL%></a>
+            </li>
+          </ul>
       </div>
     </form>
   </body>
