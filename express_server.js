@@ -16,7 +16,8 @@ app.use(cookieParser());
 app.use(cookieSession({
   name: "session",
   keys: ["This is a key for a basic tinyURL APP"],
-  maxAge: 60 * 60 * 1000
+  maxAge: 60 * 60 * 1000,
+  signed: false
 }))
 
 //This function creates a random string which will be used for creating the shorturl
@@ -46,9 +47,7 @@ const users = {
 //URL Database
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "userRandomID" },
-  "9sm5xK": { longURL: "http://www.google.com", userID: "user2RandomID" },
-  "9sm51K": { longURL: "http://www.google1.com", userID: "user2RandomID" },
-  "9sm53K": { longURL: "http://www.google2.com", userID: "user2RandomID" }
+  "9sm5xK": { longURL: "http://www.google.com", userID: "user2RandomID" }
 };
 
 //Email lookup function to check if the email entered
@@ -260,7 +259,7 @@ app.get("/u/:shortURL", (req, res) => {
   if(!urlDatabase[req.params.shortURL]) {
     res.send("Sorry, this tiny URL does not exist.");
   } else {
-    res.render("showShortUrl", templateVars);
+    res.redirect(urlDatabase[req.params.shortURL].longURL);
   }
 });
 
