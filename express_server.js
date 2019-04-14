@@ -93,7 +93,7 @@ function getEmail(userid) {
 app.get("/", (req, res) => {
   let userid = req.session.userid;
   if(userid) {
-    res.redirect("/urls")
+    res.redirect("/urls");
   } else {
     res.redirect("/login");
   }
@@ -102,7 +102,12 @@ app.get("/", (req, res) => {
 
 //Route to get the registration form
 app.get("/register", (req, res) => {
-  res.render("registration");
+  let userid = req.session.userid;
+  if (!userid) {
+    res.render("registration");
+  } else {
+    res.redirect("/urls");
+  }
 });
 
 //Route to post the registration
@@ -125,9 +130,15 @@ app.post("/register", (req, res) => {
   }
 });
 
+
 //Route to get the login form
 app.get("/login", (req, res) => {
-  res.render("login");
+  let userid = req.session.userid;
+  if (!userid) {
+    res.render("login");
+  } else {
+    res.redirect("/urls");
+  }
 });
 
 //Route to post login
@@ -146,7 +157,7 @@ app.post("/login", (req, res) => {
       req.session.userid = userid;
       res.redirect("/urls");
     } else if (emailPresent && !passwordMatch) {
-      res.status(403).send("Incorrect Password")
+      res.status(403).send("Incorrect Password");
     } else if (!emailPresent){
       res.status(403).send("User not registered. Please register");
     }
@@ -165,7 +176,7 @@ app.post("/logout", (req, res) => {
 app.get("/urls", (req, res) => {
   let userid = req.session.userid;
   let useremail = getEmail(userid);
-  let selectedUrlDatabase = {}
+  let selectedUrlDatabase = {};
   if(userid) {
     for (element in urlDatabase) {
       if (urlDatabase[element].userID === userid) {
@@ -175,8 +186,6 @@ app.get("/urls", (req, res) => {
     let templateVars = {username: useremail, urls: selectedUrlDatabase};
     res.render("urls_index", templateVars);
   } else {
-    //res.redirect("/login"); (This statement will redirect the user to the login page.
-                             //But changing it to display an error message instead.)
     res.send("User not logged in. Please login/register");
   }
 });
@@ -197,11 +206,11 @@ app.get("/urls/new", (req, res) => {
 });
 
 //This route creates the new tiny url.
-app.post("/urls/new", (req, res) => {
+app.post("/urls", (req, res) => {
   let userid = req.session.userid;
   let newShortURL = generateShortURL();
   urlDatabase[newShortURL] = { longURL: req.body.longURL, userID: userid};
-  res.redirect("/urls");
+  res.redirect("/urls/" + newShortURL);
 })
 
 //Route to delete a URL
@@ -222,12 +231,16 @@ app.post("/urls/:url/delete", (req, res) => {
 app.get("/urls/:shortURL",(req, res) => {
   let userid = req.session.userid;
   let useremail = getEmail(userid);
-  if(userid && urlDatabase[req.params.shortURL].userID === userid) {
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send("Tiny url does not exist.");
+  } else if(userid && urlDatabase[req.params.shortURL].userID === userid) {
     let templateVars = {username: useremail,
     shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
     res.render("urls_show", templateVars);
+  } else if (userid && urlDatabase[req.params.shortURL].userID !== userid) {
+    res.send("This Tiny URL belongs to some other user. You do not have privilage to make any changes.");
   } else {
-    res.redirect("/login");
+    res.send("User is not logged in. Please login/register ");
   }
 });
 
@@ -244,7 +257,11 @@ app.post("/urls/:id", (req, res) => {
 //This route renders the tiny URLS page to anyone, even when the user is not logged in.
 app.get("/u/:shortURL", (req, res) => {
   let templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
-  res.render("showShortUrl", templateVars);
+  if(!urlDatabase[req.params.shortURL]) {
+    res.send("Sorry, this tiny URL does not exist.");
+  } else {
+    res.render("showShortUrl", templateVars);
+  }
 });
 
 app.listen(PORT, () => {
